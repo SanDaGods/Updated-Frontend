@@ -5,7 +5,7 @@
 let currentApplicantId = null;
 let currentEvaluation = null;
 let currentApplicantData = null;
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://updated-backend-production-ff82.up.railway.app";
 const DOCUMENTS_BASE_PATH = "/documents/";
 
 // ========================
