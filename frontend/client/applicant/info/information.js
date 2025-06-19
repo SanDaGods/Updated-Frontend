@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://eteeap-tracking-system-iflde-production-88e8.up.railway.app";
+const API_BASE_URL = "https://updated-backend-production-ff82.up.railway.app";
 
 document.addEventListener("DOMContentLoaded", () => {
   // Show alert message
