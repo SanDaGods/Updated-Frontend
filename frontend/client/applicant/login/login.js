@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
             showNotification("Registration successful! Please fill out your personal information.", "success");
             localStorage.setItem("userId", data.data.userId);
             localStorage.setItem("applicantId", data.data.applicantId);
-            window.location.href = "/client/applicant/info/information.html";
+            window.location.href = "https://updated-frontend-ten.vercel.app/frontend/client/applicant/info/information.html";
         } catch (error) {
             showNotification(`Registration failed: ${error.message}`, "error");
         } finally {
@@ -216,7 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 showNotification("Login successful!", "success");
                 localStorage.setItem("userId", data.data.userId);
                 localStorage.setItem("userEmail", data.data.email);
-                window.location.href = "/client/applicant/timeline/timeline.html";
+                window.location.href = "https://updated-frontend-ten.vercel.app/frontend/client/applicant/timeline/timeline.html";
             } else {
                 throw new Error(data.error || "Login failed");
             }
@@ -316,7 +316,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     fullName: data.data.fullName
                 }));
 
-                window.location.href = data.redirectTo || "/client/assessor/dashboard/dashboard.html";
+                window.location.href = data.redirectTo || "https://updated-frontend-ten.vercel.app/frontend/client/assessor/dashboard/dashboard.html";
             } else {
                 throw new Error(data.error || "Login failed");
             }
