@@ -1,71 +1,50 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const API_BASE_URL = "https://updated-backend-production-f4d8.up.railway.app";
+
     const wrapper = document.querySelector('.wrapper');
     const loginContainer = document.querySelector('.form-box.login');
-    
-    // Role tab handling
     const roleTabs = document.querySelectorAll('.role-tab');
     const loginForms = document.querySelectorAll('.login-form');
-    
-    // Initialize form states
+
     function initForms() {
-        // Show only the active form (applicant by default)
         loginForms.forEach(form => form.classList.remove('active'));
         document.querySelector('.login-form[data-role="applicant"]').classList.add('active');
-        
-        // Set active tab
         roleTabs.forEach(tab => tab.classList.remove('active'));
         document.querySelector('.role-tab[data-role="applicant"]').classList.add('active');
-        
-        // Hide other forms
         document.querySelector('.register').style.display = 'none';
         document.querySelector('.forgot').style.display = 'none';
         if (document.getElementById('verificationForm')) document.getElementById('verificationForm').style.display = 'none';
         if (document.getElementById('newPasswordForm')) document.getElementById('newPasswordForm').style.display = 'none';
-        
         wrapper.classList.remove('active', 'active-forgot', 'active-verification', 'active-new-password');
     }
-    
+
     initForms();
 
-    // Role tab switching
     roleTabs.forEach(tab => {
         tab.addEventListener('click', () => {
             const role = tab.dataset.role;
-            
-            // Update active tab
             roleTabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
-            
-            // Show the selected form
             loginForms.forEach(form => form.classList.remove('active'));
             document.querySelector(`.login-form[data-role="${role}"]`).classList.add('active');
         });
     });
 
-    // Main nav login button
     document.querySelector('.btnLogin-popup')?.addEventListener('click', (e) => {
         e.preventDefault();
         initForms();
         wrapper.scrollIntoView({ behavior: 'smooth' });
     });
 
-    // Password toggle functionality
     document.querySelectorAll(".toggle-password").forEach((toggle) => {
         toggle.addEventListener("click", () => {
             const input = toggle.parentElement.querySelector("input");
             const icon = toggle.querySelector("ion-icon");
-            
-            if (input.type === "password") {
-                input.type = "text";
-                icon.setAttribute("name", "eye");
-            } else {
-                input.type = "password";
-                icon.setAttribute("name", "eye-off");
-            }
+            input.type = input.type === "password" ? "text" : "password";
+            icon.setAttribute("name", input.type === "password" ? "eye-off" : "eye");
         });
     });
 
-    // Terms and conditions handling
     document.getElementById("terms-link")?.addEventListener("click", function(event) {
         event.preventDefault();
         document.getElementById("terms-con").style.display = "block";
@@ -76,58 +55,33 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("terms-checkbox").checked = true;
     });
 
-    // Form switching logic (register/login/forgot)
     document.querySelector(".register-link")?.addEventListener("click", (e) => {
         e.preventDefault();
-        // Hide all other forms
-        document.querySelectorAll('.form-box').forEach(form => {
-            form.style.display = 'none';
-        });
-        // Show registration form
+        document.querySelectorAll('.form-box').forEach(form => form.style.display = 'none');
         document.querySelector('.register').style.display = 'block';
         wrapper.classList.add('active');
     });
 
     document.querySelector(".login-link")?.addEventListener("click", (e) => {
         e.preventDefault();
-        // Hide all other forms
-        document.querySelectorAll('.form-box').forEach(form => {
-            form.style.display = 'none';
-        });
-        // Show login form
+        document.querySelectorAll('.form-box').forEach(form => form.style.display = 'none');
         loginContainer.style.display = 'block';
-        initForms(); // Reset to applicant login
+        initForms();
         wrapper.classList.remove('active');
     });
 
     document.querySelector(".forgot-link")?.addEventListener("click", (e) => {
         e.preventDefault();
-        // Hide all other forms
-        document.querySelectorAll('.form-box').forEach(form => {
-            form.style.display = 'none';
-        });
-        // Show forgot password form
+        document.querySelectorAll('.form-box').forEach(form => form.style.display = 'none');
         document.querySelector('.forgot').style.display = 'block';
         wrapper.classList.add('active-forgot');
     });
-
-    // Common functions
-    const resetInputs = () => {
-        document.querySelectorAll("input").forEach((input) => {
-            if (input.type === "checkbox") {
-                input.checked = false;
-            } else {
-                input.value = "";
-            }
-        });
-    };
 
     const showNotification = (message, type = "info") => {
         const notification = document.getElementById("notification");
         notification.textContent = message;
         notification.className = `notification ${type}`;
         notification.style.display = "block";
-        
         setTimeout(() => {
             notification.style.opacity = "0";
             setTimeout(() => {
@@ -137,7 +91,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 3000);
     };
 
-    // Password reset flow
     document.getElementById("resetForm")?.addEventListener("submit", (e) => {
         e.preventDefault();
         document.querySelector('.forgot').style.display = "none";
@@ -158,22 +111,20 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         const newPassword = document.getElementById("newpassword").value;
         const confirmPassword = document.getElementById("confirmNewPassword").value;
-
         if (newPassword !== confirmPassword) {
             showNotification("Passwords do not match. Please try again.", "error");
             return;
         }
-
         showNotification("Password successfully reset! Redirecting to login...", "success");
         setTimeout(() => {
             document.getElementById('newPasswordForm').style.display = 'none';
             loginContainer.style.display = 'block';
-            initForms(); // Reset to applicant login
+            initForms();
             wrapper.classList.remove('active-new-password');
         }, 2000);
     });
 
-    // Applicant Registration
+    // ✅ Fixed Applicant Registration API
     document.getElementById("registerForm")?.addEventListener("submit", async (e) => {
         e.preventDefault();
         const email = document.getElementById("regEmail").value.trim().toLowerCase();
@@ -211,7 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.textContent = "Registering...";
 
         try {
-            const response = await fetch("/api/register", {
+            const response = await fetch(`${API_BASE_URL}/applicants/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -235,7 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Applicant Login
+    // ✅ Fixed Applicant Login API
     document.getElementById("applicantLoginForm")?.addEventListener("submit", async (e) => {
         e.preventDefault();
         const email = document.getElementById("applicantEmail").value.trim().toLowerCase();
@@ -252,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.textContent = "Logging in...";
 
         try {
-            const response = await fetch("http://localhost:3000/api/login", {
+            const response = await fetch(`${API_BASE_URL}/applicants/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -277,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Admin Login
+    // ✅ Fixed Admin Login API
     document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) => {
         e.preventDefault();
         const email = document.getElementById("adminEmail").value.trim();
@@ -299,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.textContent = "Logging in...";
 
         try {
-            const response = await fetch("/admin/login", {
+            const response = await fetch(`${API_BASE_URL}/admin/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -328,7 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Assessor Login
+    // ✅ Fixed Assessor Login API
     document.getElementById("assessorLoginForm")?.addEventListener("submit", async (e) => {
         e.preventDefault();
         const email = document.getElementById("assessorEmail").value.trim();
@@ -349,7 +300,7 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.textContent = "Logging in...";
 
         try {
-            const response = await fetch("http://localhost:3000/assessor/login", {
+            const response = await fetch(`${API_BASE_URL}/assessor/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -378,7 +329,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Check if admin email is remembered
     const savedAdminEmail = localStorage.getItem("adminEmail");
     if (savedAdminEmail) {
         document.getElementById("adminEmail").value = savedAdminEmail;
