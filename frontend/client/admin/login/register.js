@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Always redirect to login page after successful registration
       showSuccess("Registration successful! Redirecting to login...");
       setTimeout(() => {
-        window.location.href = '/frontend/AdminSide/1.adminLogin/adminlogin.html';
+        window.location.href = '/frontend/admin/1.adminLogin/adminlogin.html';
       }, 1500);
 
     } catch (error) {

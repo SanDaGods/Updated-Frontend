@@ -18,9 +18,9 @@ async function handleLogin(event, role) {
 
             // Redirect based on role
             if (data.role === "admin") {
-                window.location.href = "/frontend/AdminSide/AdminDashboard/adDogin.html";
+                window.location.href = "/frontend/admin/dashboard/dashboard.html";
             } else {
-                window.location.href = "/frontend/ApplicantSide/ApplicantDashboard/ApplicantDashboard.html";
+                window.location.href = "/frontend/applicant/dashboard/dashboard.html";
             }
         } else {
             alert(data.error || "Login failed!");
