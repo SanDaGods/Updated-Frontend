@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     } catch (error) {
       console.error("Logout error:", error);
-      showErrorMessage("Failed to logout. Please try again.");
+      showNotification("Failed to logout. Please try again.", "error");
     }
   }
 
@@ -191,7 +191,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       });
 
       const uploadBtn = section.querySelector(".upload-btn");
-      const originalBtnText = uploadBtn.innerHTML;
       uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
       uploadBtn.disabled = true;
 
@@ -220,5 +219,41 @@ document.addEventListener("DOMContentLoaded", async function () {
       uploadBtn.innerHTML = '<i class="fas fa-plus"></i> Add';
       uploadBtn.disabled = false;
     }
+  }
+
+  // Dropdown toggles (messages, notifications, profile)
+  const dropdownToggles = document.querySelectorAll(".dropdown-toggle");
+
+  dropdownToggles.forEach((toggle) => {
+    toggle.addEventListener("click", function (event) {
+      event.preventDefault();
+      const parentDropdown = toggle.parentElement;
+      parentDropdown.classList.toggle("active");
+
+      // Close others
+      document.querySelectorAll(".dropdown").forEach((dropdown) => {
+        if (dropdown !== parentDropdown) {
+          dropdown.classList.remove("active");
+        }
+      });
+    });
+  });
+
+  // Close dropdowns on outside click
+  document.addEventListener("click", function (event) {
+    if (!event.target.closest(".dropdown")) {
+      document.querySelectorAll(".dropdown").forEach((dropdown) => {
+        dropdown.classList.remove("active");
+      });
+    }
+  });
+
+  // Logout handler
+  const logoutButton = document.querySelector("#logout");
+  if (logoutButton) {
+    logoutButton.addEventListener("click", function (event) {
+      event.preventDefault();
+      logoutUser();
+    });
   }
 });
