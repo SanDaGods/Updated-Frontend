@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const API_BASE_URL = "https://updated-backend-production-ff82.up.railway.app";
-
-  // Logout handler
+      const API_BASE_URL = "https://updated-backend-production-ff82.up.railway.app";
+  
+  // Authentication and dropdown code remains the same
   const logoutButton = document.querySelector("#logout");
 
   if (logoutButton) {
@@ -9,11 +9,10 @@ document.addEventListener("DOMContentLoaded", function () {
       event.preventDefault();
       sessionStorage.clear();
       localStorage.removeItem("userSession");
-      window.location.href = "../Login/login.html";
+      window.location.href = "../login/login.html";
     });
   }
 
-  // Dropdown toggle handling
   const dropdownToggles = document.querySelectorAll(".dropdown-toggle");
 
   dropdownToggles.forEach((toggle) => {
@@ -38,17 +37,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Timeline logic
+  // New Timeline Logic
   async function fetchApplicantStatus() {
     try {
-      const response = await fetch(`${API_BASE_URL}/applicant/auth-status`);
+      const response = await fetch("/applicant/auth-status");
       const data = await response.json();
 
       if (data.authenticated && data.user) {
         updateTimeline(data.user.status);
       } else {
-        // Redirect if not authenticated
-        window.location.href = "../Login/login.html";
+        // Handle unauthenticated user
+        window.location.href = "../login/login.html";
       }
     } catch (error) {
       console.error("Error fetching applicant status:", error);
@@ -58,11 +57,12 @@ document.addEventListener("DOMContentLoaded", function () {
   function updateTimeline(status) {
     const steps = document.querySelectorAll("#progress-bar li");
 
-    // Reset steps
+    // Reset all steps
     steps.forEach((step) => {
       step.className = "step-todo";
     });
 
+    // Special handling for rejected/failed states
     const timelineTitle = document.querySelector(".timeline");
     const resultLink = document.getElementById("result-link");
 
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       case "Evaluated - Failed":
         steps.forEach((step) => (step.className = "step-done"));
-        steps[4].className = "step-failed";
+        steps[4].className = "step-failed"; // Add special class for failed state
         timelineTitle.textContent = "Application Timeline (Not Passed)";
         resultLink.href = "result.html";
         resultLink.style.pointerEvents = "auto";
@@ -100,9 +100,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
       case "Rejected":
         steps[0].className = "step-done";
-        steps[1].className = "step-rejected";
+        steps[1].className = "step-rejected"; // Special styling for rejection
         steps[1].querySelector(".sub-text").textContent =
           "Your application was rejected";
+        // Hide remaining steps
         for (let i = 2; i < steps.length; i++) {
           steps[i].style.display = "none";
         }
