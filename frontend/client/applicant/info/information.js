@@ -1,3 +1,5 @@
+const API_BASE_URL = "https://eteeap-tracking-system-iflde-production-88e8.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", () => {
   // Show alert message
   function showAlert(message, type = "info") {
@@ -171,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
         submitButton.innerHTML = '<span class="spinner"></span> Next Page';
 
         // Send data to server
-        const response = await fetch("/api/update-personal-info", {
+        const response = await fetch(`${API_BASE_URL}/api/update-personal-info`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
