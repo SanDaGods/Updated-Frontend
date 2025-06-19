@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://updated-backend-production-f4d8.up.railway.app";
 let currentApplicant = null;
 
 // DOM Elements
