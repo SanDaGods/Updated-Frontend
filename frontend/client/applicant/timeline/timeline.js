@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
       event.preventDefault();
       sessionStorage.clear();
       localStorage.removeItem("userSession");
-      window.location.href = "../login/login.html";
+      window.location.href = "../Login/login.html";
     });
   }
 
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
         updateTimeline(data.user.status);
       } else {
         // Redirect if not authenticated
-        window.location.href = "../login/login.html";
+        window.location.href = "../Login/login.html";
       }
     } catch (error) {
       console.error("Error fetching applicant status:", error);
