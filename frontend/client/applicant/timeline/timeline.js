@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
+      const API_BASE_URL = "https://updated-backend-production-ff82.up.railway.app";
+  
   // Authentication and dropdown code remains the same
   const logoutButton = document.querySelector("#logout");
 
@@ -7,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
       event.preventDefault();
       sessionStorage.clear();
       localStorage.removeItem("userSession");
-      window.location.href = "../Login/login.html";
+      window.location.href = "../login/login.html";
     });
   }
 
@@ -45,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
         updateTimeline(data.user.status);
       } else {
         // Handle unauthenticated user
-        window.location.href = "../Login/login.html";
+        window.location.href = "../login/login.html";
       }
     } catch (error) {
       console.error("Error fetching applicant status:", error);
