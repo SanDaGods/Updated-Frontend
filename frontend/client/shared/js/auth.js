@@ -6,7 +6,7 @@
  */
 async function protectPage() {
   try {
-    const response = await fetch("http://localhost:3000/auth-status", {
+    const response = await fetch("https://updated-backend-production-ff82.up.railway.app/auth-status", {
       credentials: "include",
     });
 
@@ -30,7 +30,7 @@ async function handleLogout() {
   showLoading();
   try {
     // First verify authentication status
-    const authCheck = await fetch("http://localhost:3000/auth-status", {
+    const authCheck = await fetch("https://updated-backend-production-ff82.up.railway.app/auth-status", {
       credentials: "include",
     });
 
@@ -42,7 +42,7 @@ async function handleLogout() {
     }
 
     // If authenticated, proceed with logout
-    const response = await fetch("http://localhost:3000/logout", {
+    const response = await fetch("https://updated-backend-production-ff82.up.railway.app/logout", {
       method: "POST",
       credentials: "include",
     });
