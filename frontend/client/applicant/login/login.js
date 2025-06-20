@@ -13,8 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector('.role-tab[data-role="applicant"]').classList.add('active');
         document.querySelector('.register').style.display = 'none';
         document.querySelector('.forgot').style.display = 'none';
-        if (document.getElementById('verificationForm')) document.getElementById('verificationForm').style.display = 'none';
-        if (document.getElementById('newPasswordForm')) document.getElementById('newPasswordForm').style.display = 'none';
+        document.getElementById('verificationForm').style.display = 'none';
+        document.getElementById('newPasswordForm').style.display = 'none';
         wrapper.classList.remove('active', 'active-forgot', 'active-verification', 'active-new-password');
     }
 
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
             roleTabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             loginForms.forEach(form => form.classList.remove('active'));
-            document.querySelector(.login-form[data-role="${role}"]).classList.add('active');
+            document.querySelector(`.login-form[data-role="${role}"]`).classList.add('active');
         });
     });
 
@@ -45,12 +45,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    document.getElementById("terms-link")?.addEventListener("click", function(event) {
+    document.getElementById("terms-link")?.addEventListener("click", function (event) {
         event.preventDefault();
         document.getElementById("terms-con").style.display = "block";
     });
 
-    document.getElementById("accept-btn")?.addEventListener("click", function() {
+    document.getElementById("accept-btn")?.addEventListener("click", function () {
         document.getElementById("terms-con").style.display = "none";
         document.getElementById("terms-checkbox").checked = true;
     });
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const showNotification = (message, type = "info") => {
         const notification = document.getElementById("notification");
         notification.textContent = message;
-        notification.className = notification ${type};
+        notification.className = `notification ${type}`;
         notification.style.display = "block";
         setTimeout(() => {
             notification.style.opacity = "0";
@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.textContent = "Registering...";
 
         try {
-            const response = await fetch(${API_BASE_URL}/api/register, {
+            const response = await fetch(`${API_BASE_URL}/api/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem("applicantId", data.data.applicantId);
             window.location.href = "https://updated-frontend-ten.vercel.app/frontend/client/applicant/info/information.html";
         } catch (error) {
-            showNotification(Registration failed: ${error.message}, "error");
+            showNotification(`Registration failed: ${error.message}`, "error");
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = originalBtnText;
@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.textContent = "Logging in...";
 
         try {
-            const response = await fetch(${API_BASE_URL}/api/login, {
+            const response = await fetch(`${API_BASE_URL}/api/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -160,12 +160,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error(data.error || "Login failed");
             }
         } catch (error) {
-            showNotification(Login failed: ${error.message}, "error");
+            showNotification(`Login failed: ${error.message}`, "error");
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = originalBtnText;
         }
     });
 
-    // Add similar fixes for adminLoginForm and assessorLoginForm with ${API_BASE_URL}
+    // You can add similar login logic for adminLoginForm and assessorLoginForm if needed
 });
