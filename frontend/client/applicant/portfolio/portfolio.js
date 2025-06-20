@@ -5,14 +5,14 @@ document.addEventListener("DOMContentLoaded", async function () {
   initializeFileViewer();
 
   try {
-    const authResponse = await fetch(`${API_BASE_URL}/applicant/auth-status`);
+    const authResponse = await fetch(${API_BASE_URL}/applicant/auth-status);
     const authData = await authResponse.json();
     const userId = localStorage.getItem("userId");
 
     if (!userId) {
       showAlert("Session expired. Please login again.", "error");
       setTimeout(() => {
-        window.location.href = `${API_BASE_URL}/frontend/client/applicant/login/login.html`;
+        window.location.href = ${API_BASE_URL}/frontend/client/applicant/login/login.html;
       }, 2000);
       return;
     }
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   async function logoutUser() {
     try {
-      const response = await fetch(`${API_BASE_URL}/applicant/logout`, {
+      const response = await fetch(${API_BASE_URL}/applicant/logout, {
         method: "POST",
         credentials: "include",
       });
@@ -65,17 +65,17 @@ document.addEventListener("DOMContentLoaded", async function () {
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/fetch-user-files/${userId}`, {
+      const response = await fetch(${API_BASE_URL}/api/fetch-user-files/${userId}, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: Bearer ${localStorage.getItem("token")},
         },
         credentials: "include",
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(HTTP error! status: ${response.status});
       }
 
       const data = await response.json();
@@ -129,15 +129,15 @@ document.addEventListener("DOMContentLoaded", async function () {
       const fileName = document.getElementById("fileName");
 
       if (currentFileText) {
-        currentFileText.textContent = `File ${index + 1} of ${currentFiles.length}`;
+        currentFileText.textContent = File ${index + 1} of ${currentFiles.length};
       }
       if (fileName) {
         fileName.textContent = file.filename;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/fetch-documents/${file._id}`);
+      const response = await fetch(${API_BASE_URL}/api/fetch-documents/${file._id});
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(HTTP error! status: ${response.status});
       }
 
       const blob = await response.blob();
@@ -194,13 +194,13 @@ document.addEventListener("DOMContentLoaded", async function () {
       uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
       uploadBtn.disabled = true;
 
-      const response = await fetch(`${API_BASE_URL}/api/submit-documents`, {
+      const response = await fetch(${API_BASE_URL}/api/submit-documents, {
         method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`);
+        throw new Error(Upload failed: ${response.statusText});
       }
 
       const result = await response.json();
