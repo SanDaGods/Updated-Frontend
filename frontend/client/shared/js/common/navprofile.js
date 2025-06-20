@@ -1,5 +1,6 @@
 class NavProfile {
   constructor() {
+    this.apiBase = "https://updated-backend-production-ff82.up.railway.app";
     this.userId = localStorage.getItem("userId");
     this.init();
   }
@@ -7,30 +8,38 @@ class NavProfile {
   async init() {
     try {
       await this.loadUserData();
-      this.setupEventListeners(); // <-- this sets up dropdown toggles
+      this.setupDropdowns(); // Handles dropdown toggling
     } catch (error) {
       console.error("Navigation profile initialization error:", error);
     }
   }
 
   async loadUserData() {
-    const authResponse = await fetch("/applicant/auth-status");
-    const authData = await authResponse.json();
+    try {
+      const authResponse = await fetch(`${this.apiBase}/applicant/auth-status`, {
+        credentials: "include",
+      });
 
-    if (!authData.authenticated) {
-      window.location.href = "../login/login.html";
-      return;
-    }
+      const authData = await authResponse.json();
+      console.log("Auth Data:", authData); // Optional debug
 
-    if (authData.user) {
-      await this.loadProfilePicture();
-      this.updateProfileName(authData.user.personalInfo || authData.user);
+      if (!authData.authenticated) {
+        window.location.href = "../login/login.html";
+        return;
+      }
+
+      if (authData.user) {
+        await this.loadProfilePicture();
+        this.updateProfileName(authData.user.personalInfo || authData.user);
+      }
+    } catch (error) {
+      console.error("Error loading user data:", error);
     }
   }
 
   async loadProfilePicture() {
     try {
-      const response = await fetch(`/api/profile-pic/${this.userId}`);
+      const response = await fetch(`${this.apiBase}/api/profile-pic/${this.userId}`);
       if (response.ok) {
         const blob = await response.blob();
         const imageUrl = URL.createObjectURL(blob);
@@ -47,63 +56,39 @@ class NavProfile {
   updateProfileName(userData) {
     const navProfileName = document.getElementById("nav-profile-name");
     if (navProfileName && userData) {
-      const nameParts = [userData.firstname, userData.lastname];
-      const displayName = nameParts
-        .filter((part) => part && part.trim())
-        .join(" ");
-      navProfileName.innerText = displayName || "Applicant";
+      const firstName = userData.firstname || "";
+      const lastName = userData.lastname || "";
+      const displayName = `${firstName} ${lastName}`.trim();
+      navProfileName.textContent = displayName || "Applicant";
     }
   }
 
-  setupEventListeners() {
-    // Toggle dropdowns on click
-    const dropdownToggles = document.querySelectorAll(".dropdown-toggle");
-    dropdownToggles.forEach((toggle) => {
-      toggle.addEventListener("click", (e) => {
-        e.preventDefault();
-        const dropdown = toggle.closest(".dropdown");
-        if (!dropdown) return;
+  setupDropdowns() {
+    const dropdowns = document.querySelectorAll(".dropdown");
+    dropdowns.forEach(dropdown => {
+      const toggle = dropdown.querySelector(".dropdown-toggle");
+      const content = dropdown.querySelector(".dropdown-content");
 
-        const content = dropdown.querySelector(".dropdown-content");
-        if (!content) return;
-
-        // Close all other dropdowns first
-        document.querySelectorAll(".dropdown-content").forEach((el) => {
-          if (el !== content) el.classList.remove("show");
-        });
-
-        // Toggle current one
-        content.classList.toggle("show");
-      });
-    });
-
-    // Close dropdowns when clicking outside
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest(".dropdown")) {
-        document.querySelectorAll(".dropdown-content").forEach((el) => {
-          el.classList.remove("show");
+      if (toggle && content) {
+        toggle.addEventListener("click", (e) => {
+          e.preventDefault();
+          content.classList.toggle("show");
         });
       }
     });
 
-    // Logout handler
-    const logoutBtn = document.getElementById("logout");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
-        localStorage.clear();
-        try {
-          await fetch("/applicant/logout", { method: "POST", credentials: "include" });
-        } catch (err) {
-          console.warn("Logout failed or no session:", err);
-        }
-        window.location.href = "../login/login.html";
-      });
-    }
+    // Hide dropdowns when clicking outside
+    window.addEventListener("click", (event) => {
+      if (!event.target.closest(".dropdown")) {
+        document.querySelectorAll(".dropdown-content").forEach((dropdown) => {
+          dropdown.classList.remove("show");
+        });
+      }
+    });
   }
 }
 
-// Initialize the nav profile when the script loads
+// Initialize when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   new NavProfile();
 });
