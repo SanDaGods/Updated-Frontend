@@ -1,7 +1,6 @@
 class NavProfile {
   constructor() {
     this.userId = localStorage.getItem("userId");
-    this.apiBase = "https://updated-backend-production-ff82.up.railway.app";
     this.init();
   }
 
@@ -15,10 +14,7 @@ class NavProfile {
   }
 
   async loadUserData() {
-    const authResponse = await fetch(`${this.apiBase}/applicant/auth-status`, {
-      credentials: "include"
-    });
-
+    const authResponse = await fetch("/applicant/auth-status");
     const authData = await authResponse.json();
 
     if (!authData.authenticated) {
@@ -34,7 +30,7 @@ class NavProfile {
 
   async loadProfilePicture() {
     try {
-      const response = await fetch(`${this.apiBase}/api/profile-pic/${this.userId}`);
+      const response = await fetch(/api/profile-pic/${this.userId});
       if (response.ok) {
         const blob = await response.blob();
         const imageUrl = URL.createObjectURL(blob);
@@ -52,16 +48,15 @@ class NavProfile {
     const navProfileName = document.getElementById("nav-profile-name");
     if (navProfileName && userData) {
       const nameParts = [userData.firstname, userData.lastname];
-      const displayName = nameParts.filter(Boolean).join(" ");
+      const displayName = nameParts
+        .filter((part) => part && part.trim())
+        .join(" ");
       navProfileName.innerText = displayName || "Applicant";
     }
   }
-
-  setupEventListeners() {
-    // Add dropdown toggles if needed
-  }
 }
 
+// Initialize the nav profile when the script loads
 document.addEventListener("DOMContentLoaded", () => {
   new NavProfile();
 });
