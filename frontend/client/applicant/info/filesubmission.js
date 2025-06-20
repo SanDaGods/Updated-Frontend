@@ -201,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       showAlert("Documents submitted successfully!", "success");
       setTimeout(() => {
-        window.location.href = "../timeline/timeline.html";
+        window.location.href = "../login/login.html";
       }, 1500);
     } catch (error) {
       console.error("Submission error:", error);
