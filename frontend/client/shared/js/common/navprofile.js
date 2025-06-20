@@ -1,39 +1,34 @@
 class NavProfile {
   constructor() {
-    this.apiBase = "https://updated-backend-production-ff82.up.railway.app";
     this.userId = localStorage.getItem("userId");
+    this.apiBase = "https://updated-backend-production-ff82.up.railway.app";
     this.init();
   }
 
   async init() {
     try {
       await this.loadUserData();
-      this.setupDropdowns(); // Handles dropdown toggling
+      this.setupEventListeners();
     } catch (error) {
       console.error("Navigation profile initialization error:", error);
     }
   }
 
   async loadUserData() {
-    try {
-      const authResponse = await fetch(`${this.apiBase}/applicant/auth-status`, {
-        credentials: "include",
-      });
+    const authResponse = await fetch(`${this.apiBase}/applicant/auth-status`, {
+      credentials: "include"
+    });
 
-      const authData = await authResponse.json();
-      console.log("Auth Data:", authData); // Optional debug
+    const authData = await authResponse.json();
 
-      if (!authData.authenticated) {
-        window.location.href = "../login/login.html";
-        return;
-      }
+    if (!authData.authenticated) {
+      window.location.href = "../login/login.html";
+      return;
+    }
 
-      if (authData.user) {
-        await this.loadProfilePicture();
-        this.updateProfileName(authData.user.personalInfo || authData.user);
-      }
-    } catch (error) {
-      console.error("Error loading user data:", error);
+    if (authData.user) {
+      await this.loadProfilePicture();
+      this.updateProfileName(authData.user.personalInfo || authData.user);
     }
   }
 
@@ -56,39 +51,17 @@ class NavProfile {
   updateProfileName(userData) {
     const navProfileName = document.getElementById("nav-profile-name");
     if (navProfileName && userData) {
-      const firstName = userData.firstname || "";
-      const lastName = userData.lastname || "";
-      const displayName = `${firstName} ${lastName}`.trim();
-      navProfileName.textContent = displayName || "Applicant";
+      const nameParts = [userData.firstname, userData.lastname];
+      const displayName = nameParts.filter(Boolean).join(" ");
+      navProfileName.innerText = displayName || "Applicant";
     }
   }
 
-  setupDropdowns() {
-    const dropdowns = document.querySelectorAll(".dropdown");
-    dropdowns.forEach(dropdown => {
-      const toggle = dropdown.querySelector(".dropdown-toggle");
-      const content = dropdown.querySelector(".dropdown-content");
-
-      if (toggle && content) {
-        toggle.addEventListener("click", (e) => {
-          e.preventDefault();
-          content.classList.toggle("show");
-        });
-      }
-    });
-
-    // Hide dropdowns when clicking outside
-    window.addEventListener("click", (event) => {
-      if (!event.target.closest(".dropdown")) {
-        document.querySelectorAll(".dropdown-content").forEach((dropdown) => {
-          dropdown.classList.remove("show");
-        });
-      }
-    });
+  setupEventListeners() {
+    // Add dropdown toggles if needed
   }
 }
 
-// Initialize when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   new NavProfile();
 });
