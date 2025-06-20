@@ -14,8 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector('.role-tab[data-role="applicant"]').classList.add('active');
         document.querySelector('.register').style.display = 'none';
         document.querySelector('.forgot').style.display = 'none';
-        document.getElementById('verificationForm')?.style.display = 'none';
-        document.getElementById('newPasswordForm')?.style.display = 'none';
+        if (document.getElementById('verificationForm')) document.getElementById('verificationForm').style.display = 'none';
+        if (document.getElementById('newPasswordForm')) document.getElementById('newPasswordForm').style.display = 'none';
         wrapper.classList.remove('active', 'active-forgot', 'active-verification', 'active-new-password');
     }
 
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
             roleTabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             loginForms.forEach(form => form.classList.remove('active'));
-            document.querySelector(`.login-form[data-role="${role}"]`).classList.add('active');
+            document.querySelector(.login-form[data-role="${role}"]).classList.add('active');
         });
     });
 
@@ -46,12 +46,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    document.getElementById("terms-link")?.addEventListener("click", (event) => {
+    document.getElementById("terms-link")?.addEventListener("click", function(event) {
         event.preventDefault();
         document.getElementById("terms-con").style.display = "block";
     });
 
-    document.getElementById("accept-btn")?.addEventListener("click", () => {
+    document.getElementById("accept-btn")?.addEventListener("click", function() {
         document.getElementById("terms-con").style.display = "none";
         document.getElementById("terms-checkbox").checked = true;
     });
@@ -86,17 +86,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const showNotification = (message, type = "info") => {
         const notification = document.getElementById("notification");
-        if (!notification) return;
         notification.textContent = message;
-        notification.className = `notification ${type}`;
+        notification.className = notification ${type};
         notification.style.display = "block";
-        notification.style.opacity = "1";
-
         setTimeout(() => {
             notification.style.opacity = "0";
             setTimeout(() => {
                 notification.style.display = "none";
-                notification.className = "notification"; // reset
+                notification.style.opacity = "1";
             }, 500);
         }, 3000);
     };
@@ -106,18 +103,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const email = document.getElementById("regEmail").value.trim().toLowerCase();
         const password = document.getElementById("regPassword").value;
         const confirmPassword = document.getElementById("confirmPassword").value;
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!email || !password || !confirmPassword)
-            return showNotification("Please fill in all fields", "error");
-        if (!emailRegex.test(email))
-            return showNotification("Please enter a valid email address", "error");
-        if (password !== confirmPassword)
-            return showNotification("Passwords do not match!", "error");
-        if (password.length < 8)
-            return showNotification("Password must be at least 8 characters", "error");
-        if (!document.getElementById("terms-checkbox").checked)
-            return showNotification("You must accept the terms and conditions", "error");
+        if (!email || !password || !confirmPassword) return showNotification("Please fill in all fields", "error");
+        if (!email.includes("@") || !email.includes(".")) return showNotification("Please enter a valid email address", "error");
+        if (password !== confirmPassword) return showNotification("Passwords do not match!", "error");
+        if (password.length < 8) return showNotification("Password must be at least 8 characters", "error");
+        if (!document.getElementById("terms-checkbox").checked) return showNotification("You must accept the terms and conditions", "error");
 
         const submitBtn = e.target.querySelector('button[type="submit"]');
         const originalBtnText = submitBtn.textContent;
@@ -125,21 +115,19 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.textContent = "Registering...";
 
         try {
-            const response = await fetch(`${API_BASE_URL}/api/register`, {
+            const response = await fetch(${API_BASE_URL}/api/register, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
             });
-
             const data = await response.json();
             if (!response.ok) throw new Error(data.details || data.error || "Registration failed");
-
             showNotification("Registration successful! Please fill out your personal information.", "success");
             localStorage.setItem("userId", data.data.userId);
             localStorage.setItem("applicantId", data.data.applicantId);
-            window.location.href = `${FRONTEND_BASE_URL}/frontend/client/applicant/info/information.html`;
+            window.location.href = "https://updated-frontend-ten.vercel.app/frontend/client/applicant/info/information.html";
         } catch (error) {
-            showNotification(`Registration failed: ${error.message}`, "error");
+            showNotification(Registration failed: ${error.message}, "error");
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = originalBtnText;
@@ -150,50 +138,35 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         const email = document.getElementById("applicantEmail").value.trim().toLowerCase();
         const password = document.getElementById("applicantPassword").value;
-
-        if (!email || !password)
-            return showNotification("Please enter both email and password", "error");
-
+        if (!email || !password) return showNotification("Please enter both email and password", "error");
         const submitBtn = e.target.querySelector('button[type="submit"]');
         const originalBtnText = submitBtn.textContent;
         submitBtn.disabled = true;
         submitBtn.textContent = "Logging in...";
 
         try {
-            const response = await fetch(`${API_BASE_URL}/api/login`, {
+            const response = await fetch(${API_BASE_URL}/api/login, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
                 credentials: "include"
             });
-
             const data = await response.json();
             if (response.ok) {
                 showNotification("Login successful!", "success");
                 localStorage.setItem("userId", data.data.userId);
                 localStorage.setItem("userEmail", data.data.email);
-                window.location.href = `${FRONTEND_BASE_URL}/frontend/client/applicant/timeline/timeline.html`;
+                window.location.href = "https://updated-frontend-ten.vercel.app/frontend/client/applicant/timeline/timeline.html";
             } else {
                 throw new Error(data.error || "Login failed");
             }
         } catch (error) {
-            showNotification(`Login failed: ${error.message}`, "error");
+            showNotification(Login failed: ${error.message}, "error");
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = originalBtnText;
         }
     });
 
-    // Optional: Add admin and assessor login handlers if forms exist
-    document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        // Add logic for admin login
-        showNotification("Admin login not implemented yet", "info");
-    });
-
-    document.getElementById("assessorLoginForm")?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        // Add logic for assessor login
-        showNotification("Assessor login not implemented yet", "info");
-    });
+    // Add similar fixes for adminLoginForm and assessorLoginForm with ${API_BASE_URL}
 });
