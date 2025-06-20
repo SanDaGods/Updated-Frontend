@@ -6,31 +6,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const roleTabs = document.querySelectorAll('.role-tab');
   const loginForms = document.querySelectorAll('.login-form');
 
-  const showNotification = (message, type = "info") => {
-    const notification = document.getElementById("notification");
-    notification.textContent = message;
-    notification.className = `notification ${type}`;
-    notification.style.display = "block";
-    setTimeout(() => {
-      notification.style.opacity = "0";
-      setTimeout(() => {
-        notification.style.display = "none";
-        notification.style.opacity = "1";
-      }, 500);
-    }, 3000);
-  };
-
   function initForms() {
-    loginForms.forEach(form => form.classList.remove('active'));
+    loginForms.forEach(f => f.classList.remove('active'));
     document.querySelector('.login-form[data-role="applicant"]').classList.add('active');
-    roleTabs.forEach(tab => tab.classList.remove('active'));
+    roleTabs.forEach(t => t.classList.remove('active'));
     document.querySelector('.role-tab[data-role="applicant"]').classList.add('active');
-
-    document.querySelector('.form-box.register').style.display = 'none';
-    document.querySelector('.form-box.forgot').style.display = 'none';
-    document.getElementById('verificationForm')?.style.display = 'none';
-    document.getElementById('newPasswordForm')?.style.display = 'none';
-
+    document.querySelector('.register').style.display = 'none';
+    document.querySelector('.forgot').style.display = 'none';
+    const vForm = document.getElementById('verificationForm');
+    const npForm = document.getElementById('newPasswordForm');
+    if (vForm) vForm.style.display = 'none';
+    if (npForm) npForm.style.display = 'none';
     wrapper.classList.remove('active', 'active-forgot', 'active-verification', 'active-new-password');
   }
 
@@ -41,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const role = tab.dataset.role;
       roleTabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
-      loginForms.forEach(form => form.classList.remove('active'));
+      loginForms.forEach(f => f.classList.remove('active'));
       document.querySelector(`.login-form[data-role="${role}"]`).classList.add('active');
     });
   });
@@ -56,15 +42,16 @@ document.addEventListener("DOMContentLoaded", () => {
     toggle.addEventListener("click", () => {
       const input = toggle.parentElement.querySelector("input");
       const icon = toggle.querySelector("ion-icon");
-      input.type = (input.type === "password") ? "text" : "password";
+      input.type = input.type === "password" ? "text" : "password";
       icon.setAttribute("name", input.type === "text" ? "eye" : "eye-off");
     });
   });
 
-  document.getElementById("terms-link")?.addEventListener("click", event => {
-    event.preventDefault();
+  document.getElementById("terms-link")?.addEventListener("click", e => {
+    e.preventDefault();
     document.getElementById("terms-con").style.display = "block";
   });
+
   document.getElementById("accept-btn")?.addEventListener("click", () => {
     document.getElementById("terms-con").style.display = "none";
     document.getElementById("terms-checkbox").checked = true;
@@ -73,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelector(".register-link")?.addEventListener("click", e => {
     e.preventDefault();
     document.querySelectorAll('.form-box').forEach(f => f.style.display = 'none');
-    document.querySelector('.form-box.register').style.display = 'block';
+    document.querySelector('.register').style.display = 'block';
     wrapper.classList.add('active');
   });
 
@@ -82,89 +69,65 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll('.form-box').forEach(f => f.style.display = 'none');
     loginContainer.style.display = 'block';
     initForms();
+    wrapper.classList.remove('active');
   });
 
   document.querySelector(".forgot-link")?.addEventListener("click", e => {
     e.preventDefault();
     document.querySelectorAll('.form-box').forEach(f => f.style.display = 'none');
-    document.querySelector('.form-box.forgot').style.display = 'block';
+    document.querySelector('.forgot').style.display = 'block';
     wrapper.classList.add('active-forgot');
   });
 
-  document.getElementById("registerForm")?.addEventListener("submit", async e => {
-    e.preventDefault();
-    const email = document.getElementById("regEmail").value.trim().toLowerCase();
-    const password = document.getElementById("regPassword").value;
-    const confirm = document.getElementById("confirmPassword").value;
+  function showNotification(msg, type = "info") {
+    const note = document.getElementById("notification");
+    note.textContent = msg;
+    note.className = `notification ${type}`;
+    note.style.display = "block";
+    setTimeout(() => {
+      note.style.opacity = "0";
+      setTimeout(() => {
+        note.style.display = "none";
+        note.style.opacity = "1";
+      }, 500);
+    }, 3000);
+  }
 
-    if (!email || !password || !confirm) return showNotification("Please fill in all fields", "error");
-    if (!email.includes("@")) return showNotification("Enter a valid email", "error");
-    if (password !== confirm) return showNotification("Passwords do not match", "error");
-    if (password.length < 8) return showNotification("Password too short", "error");
-    if (!document.getElementById("terms-checkbox").checked) return showNotification("Accept terms and conditions", "error");
-
-    const btn = e.target.querySelector('button[type="submit"]');
-    const original = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = "Registering...";
-
-    try {
-      const resp = await fetch(`${API_BASE_URL}/api/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await resp.json();
-      if (!resp.ok) throw new Error(data.details || data.error || "Registration failed");
-      showNotification("Registered! Please continue", "success");
-      localStorage.setItem("userId", data.data.userId);
-      window.location.href = "/frontend/client/applicant/info/information.html";
-    } catch (err) {
-      showNotification(`Registration failed: ${err.message}`, "error");
-    } finally {
-      btn.disabled = false;
-      btn.textContent = original;
-    }
-  });
-
+  // Applicant login
   document.getElementById("applicantLoginForm")?.addEventListener("submit", async e => {
     e.preventDefault();
     const email = document.getElementById("applicantEmail").value.trim().toLowerCase();
-    const pass = document.getElementById("applicantPassword").value;
-    if (!email || !pass) return showNotification("Enter both email and password", "error");
+    const password = document.getElementById("applicantPassword").value;
+    if (!email || !password) return showNotification("Please enter both email and password", "error");
+
     const btn = e.target.querySelector('button[type="submit"]');
-    const orig = btn.textContent;
+    const oldText = btn.textContent;
     btn.disabled = true;
     btn.textContent = "Logging in...";
 
     try {
-      const resp = await fetch(`${API_BASE_URL}/api/login`, {
+      const res = await fetch(`${API_BASE_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, password: pass })
+        body: JSON.stringify({ email, password }),
       });
-      const data = await resp.json();
-      if (!resp.ok) throw new Error(data.error || "Login failed");
-      showNotification("Login successful!", "success");
-      localStorage.setItem("userId", data.data.userId);
-      localStorage.setItem("userEmail", data.data.email);
-      window.location.href = "/frontend/client/applicant/timeline/timeline.html";
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem("userId", data.data.userId);
+        localStorage.setItem("userEmail", data.data.email);
+        showNotification("Login successful!", "success");
+        window.location.href = "/frontend/client/applicant/timeline/timeline.html";
+      } else {
+        throw new Error(data.error || "Login failed");
+      }
     } catch (err) {
       showNotification(`Login failed: ${err.message}`, "error");
     } finally {
       btn.disabled = false;
-      btn.textContent = orig;
+      btn.textContent = oldText;
     }
   });
 
-  document.getElementById("adminLoginForm")?.addEventListener("submit", async e => {
-    e.preventDefault();
-    // Similar logic adapted for adminLogin endpoint...
-  });
-
-  document.getElementById("assessorLoginForm")?.addEventListener("submit", async e => {
-    e.preventDefault();
-    // Similar logic adapted for assessorLogin endpoint...
-  });
+  // Similarly, fix adminLoginForm, assessorLoginForm if needed...
 });
